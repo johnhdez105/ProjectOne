@@ -1,4 +1,4 @@
-'use stritct';
+'use strict';
 
 const $self = {
   constraints: { audio: false, video: true }
@@ -7,6 +7,7 @@ const $self = {
 requestUserMedia($self.constraints);
 
 async function requestUserMedia(constraints) {
-  $self.stream = await navigator.mediaDevices
-  .getUserMedia(constraints);
+  const video = document.querySelector('#self');
+  $self.stream = await navigator.mediaDevices .getUserMedia(constraints);
+  video.srcObject = $self.stream;
 }
