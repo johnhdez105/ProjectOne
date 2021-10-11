@@ -24,6 +24,15 @@ namespaces.on('connection', function (socket) {
   const namespace = socket.nsp;
   socket.broadcast.emit('connected peer');
 
+  socket.on('signal', function(signal) {
+    socket.broadcast.emit('signal', signal);
+  })
+
+  socket.on('disconnect', function() {
+    namespace.emit('disconnected peer');
+  })
+
+
 });
 
 module.exports = { app, io };
