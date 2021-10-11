@@ -6,7 +6,7 @@ const $self = {
 };
 
 const $peer = {
-  connection: new RTCPeerConnection($self.rtcConfig);
+  connection: new RTCPeerConnection($self.rtcConfig)
 };
 
 requestUserMedia($self.constraints);
@@ -16,3 +16,17 @@ async function requestUserMedia(constraints) {
   $self.stream = await navigator.mediaDevices.getUserMedia(constraints);
   video.srcObject = $self.stream;
 }
+
+const namespace = window.location.hash.substr(1);
+const button = document.querySelector('#call-button');
+const sc = io(`/${namespace}`, { autoConnect: false });
+button.addEventListener('click', function() {
+  sc.open();
+});
+
+sc.on('connect', function() {
+  console.log('Connected to socket.io instance');
+});
+sc.on('connected peer', function() {
+  console.log('Heard a peer connect!');
+});
