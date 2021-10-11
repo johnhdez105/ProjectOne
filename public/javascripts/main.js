@@ -16,29 +16,35 @@ const $peer = {
 requestUserMedia($self.constraints);
 
 async function requestUserMedia(constraints) {
-  const video = document.querySelector('#self');
   $self.stream = await navigator.mediaDevices.getUserMedia(constraints);
-  video.srcObject = $self.stream;
+  displayStream('#self', $self.stream);
 }
 
 const namespace = prepareNamespace(window.location.hash, true);
 
 const sc = io(`/${namespace}`, { autoConnect: false });
 
+registerScEvents();
+
 const button = document.querySelector('#call-button');
 
 button.addEventListener('click', handleButton);
+
+function displayStream(selector, stream) {
+  const video = document.querySelector(selector);
+  video.srcObject = stream;
+}
 
 function handleButton(e) {
   const button = e.target;
   if (button.className === 'join') {
     button.className = 'leave';
     button.innerText = 'Leave Call';
-    // joinCall();
+    joinCall();
   } else {
     button.className = 'join';
     button.innerText = 'Join Call';
-    // leaveCall();
+    leaveCall();
   }
 }
 
@@ -48,6 +54,9 @@ function joinCall() {
   establishCallFeatures($peer);
 }
 function leaveCall() {
+  $peer.connection.close();
+  $peer.connection = new RTCPeerConnection($self.rtcConfig);
+  displayStream('#peer', null);
   sc.close();
 }
 
@@ -79,7 +88,8 @@ function handleIceCandidate({ candidate }) {
   sc.emit('signal', { candidate:
     candidate });
 }
-function handleRtcTrack() {
+function handleRtcTrack({ track, streams: [stream] }) {
+  displayStream('#peer', stream);
 }
 
 function registerScEvents () {
@@ -97,6 +107,11 @@ function handleScConnectedPeer() {
 }
 function handleScDisconnectedPeer(){
   console.log('Heard disconnected peer event');
+  displayStream('#peer', null);
+  $peer.connection.close();
+  $peer.connection = new RTCPeerConnection($self.rtcConfig);
+  registerRtcEvents($peer);
+  establishCallFeatures($peer);
 }
 async function handleScSignal({ description, candidate }) {
   console.log('Heard signal event!');

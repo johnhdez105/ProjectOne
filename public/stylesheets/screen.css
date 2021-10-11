@@ -24,6 +24,7 @@ body {
 }
 h1 {
   font-size: 2em;
+  color: #000000;
   line-height: 0.9em;
   margin-top: 1em;
   margin-bottom: 0.75em;
@@ -43,10 +44,6 @@ h4 {
   font-size: 1em;
   margin-top: 1.3125em;
   margin-bottom: 0.0625em;
-}
-
-footer {
-  padding-top: 1.5em;
 }
 
 @media screen and (mid-width 26.25em) {
@@ -136,4 +133,19 @@ video {
   top: 65%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.header img {
+  float: right;
+  width: 100px;
+  height: 100px;
+}
+
+.header h1 {
+  position: relative;
+  top: 18px;
+  left: 10px;
+}
+#self {
+  width: 50%;
+  left: 50%;
 }
