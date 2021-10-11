@@ -5,10 +5,10 @@
  * Module dependencies.
  */
 
-var { readFileSync } = require('fs');
-var app = require('../app');
-var debug = require('debug')('projectone:server');
-var https = require('https');
+const { readFileSync } = require('fs');
+const {app, io } = require('../app');
+const debug = require('debug')('projectone:server');
+const https = require('https');
 
 /**
  * environment variables
@@ -34,10 +34,11 @@ const config = {
 };
 var server = https.createServer(config, app);
 
+io.attach(server);
+
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
