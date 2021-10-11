@@ -113,6 +113,13 @@ if (description.type === 'offer') {
     }
   } else if (candidate) {
     console.log('Received ICE candidate:', candidate);
+    try {
+      await $peer.connection.addIceCandidate(candidate);
+    } catch(e) {
+      if (!$self.isIgnoringOffer) {
+        console.error('Cannot add ICE candidate for peer', e);
+      }
+    }
   }
 }
 
