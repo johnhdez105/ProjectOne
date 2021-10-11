@@ -101,6 +101,16 @@ $self.isIgnoringOffer = !$self.isPolite && offerCollision;
 if ($self.isIgnoringOffer) {
   return;
 }
+$self.isSettingRemoteAnswerPending = description.type === 'answer';
+await $peer.connection.setRemoteDescription(description);
+$self.isSettingRemoteAnswerPending = false;
+
+if (description.type === 'offer') {
+  await $peer.connection.setLocalDescription();
+  sc.emit('signal',
+    { description:
+      $peer.connection.localDescription });
+    }
   } else if (candidate) {
     console.log('Received ICE candidate:', candidate);
   }
