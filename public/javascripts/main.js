@@ -30,6 +30,17 @@ const button = document.querySelector('#call-button');
 
 button.addEventListener('click', handleButton);
 
+//function for chat//
+const chat = document.querySelector('#chat-form');
+
+chat.addEventListener('submit', chatFunc);
+
+//function for audio muting//
+const audiom = document.querySelector('#audio-button');
+
+audiom.addEventListener('click', muteAudio);
+
+//User-Media//
 function displayStream(selector, stream) {
   const video = document.querySelector(selector);
   video.srcObject = stream;
@@ -50,21 +61,23 @@ function handleButton(e) {
 
 function handleChatForm(e) {
   e.preventDefault();
-  console.log('The chat form was submitted!');
-  const log = document.querySelector('#chat-log');
   const form = e.target;
   const input = form.querySelector('#chat-input');
   const message = input.value;
 
-  const li = document.createElement('li');
-  li.innerText = message;
-  li.className = 'self';
-  log.appendChild(li);
-
-  // TODO: send message over data channel
+  appendMessage('self', message);
+  $peer.chatChannel.send(message);
 
   console.log('The chat form was submitted. Message:', message);
   input.value = '';
+}
+
+function appendMessage(sender, message) {
+  const log = document.querySelector('#chat-log');
+  const li = document.createElement('li');
+  li.innerText = message;
+  li.className = sender;
+  log.appendChild(li);
 }
 
 function joinCall() {
@@ -79,10 +92,51 @@ function leaveCall() {
   sc.close();
 }
 
+function chatFunc(e) {
+  e.preventDefault();
+  const form = e.target;
+  const userInput = document.querySelector('#chat-input');
+  const message = userInput.value;
+
+
+  appendMessage('self', message);
+  $peer.chatChannel.send(message);
+  console.log ('customer message', message);
+  userInput.value = '';
+}
+
+function appendMessage (sender, message) {
+  const log = document.querySelector('#chat-log');
+  const li = document.createElement('li');
+  li.innerText = message;
+  li.className = sender;
+  log.appendChild(li);
+}
+
+function muteAudio(e){
+  const audmu = $self.stream.getAudioTracks()[0];
+  const audiom = e.target;
+  if (audiom.className === 'audiocut') {
+    audiom.className = 'mute';
+    audiom.innerText = 'unmute';
+    audmu.enabled = false;
+    console.log('Audio Stopped');
+  } else {
+    audiom.className = 'audiocut';
+    audiom.innerText = 'mute';
+    audmu.enabled = true;
+    console.log('audio started');
+  }
+}
+
+
 function establishCallFeatures(peer) {
-  peer.connection
-    .addTrack($self.stream.getTracks()[0],
-      $self.stream);
+  peer.chatChannel = peer.connection
+    .createDataChannel(`chat`,
+      { negotiated: true, id: 50} );
+  peer.chatChannel.onmessage = function({ data }) {
+    appendMessage('peer', data);
+  };
 }
 
 function registerRtcEvents(peer) {
