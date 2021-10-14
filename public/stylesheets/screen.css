@@ -12,15 +12,7 @@ a,abbr,acronym,address,applet,article,aside,audio,b,big,blockquote,body,canvas,c
 html {
   font-family: sans-serif;
   font-weight: normal;
-  background: #222;
-  color: #EEE;
-  padding: 1em;
-}
-body {
-  font-family: sans-serif;
-  line-height: 1.3125em;
-  max-width: 35em;
-  margin: auto;
+  background: #e66960;
 }
 h1 {
   font-size: 2em;
@@ -32,11 +24,13 @@ h1 {
 
 h2 {
   font-size: 2.9375em;
+  color: #000000;
   margin-top: 0.75em;
   margin-bottom: 0.75em;
 }
 h3 {
   font-size: 1.8125em;
+  color: #EEE;
   margin-top: 1.3125em;
   margin-bottom: 0.5em;
 }
@@ -45,22 +39,6 @@ h4 {
   margin-top: 1.3125em;
   margin-bottom: 0.0625em;
 }
-
-@media screen and (mid-width 26.25em) {
-  figure.portrait{
-    width: 50%;
-  }
-}
-@media screen and (mid-width: 23.06em) {
-  figure.landscape{
-    width: 50%;
-  }
-}
-@media screen and (min-width: 20.625em) {
-  h1 {
-    font-size: 4em;
-  }
-}
 /* Responsive Images */
 img {
   display: block;
@@ -68,7 +46,6 @@ img {
   padding-top: 0.375em;
 }
 body{
-  background: #f2f2f2;
   font-family: 'Open Sans', sans-serif;
 }
 
@@ -105,8 +82,8 @@ video {
 }
 
 .searchButton {
-  width: 40px;
-  height: 36px;
+  width: 80px;
+  height: 56px;
   border: 1px solid #c0392b;
   background: #c0392b;
   text-align: center;
@@ -116,8 +93,8 @@ video {
   font-size: 20px;
 }
 .leave {
-  width: 40px;
-  height: 36px;
+  width: 80px;
+  height: 56px;
   border: 1px solid #c0392b;
   background: #c0392b;
   text-align: center;
@@ -131,11 +108,11 @@ video {
   width: 30%;
   position: absolute;
   top: 65%;
-  left: 50%;
+  left: 75%;
   transform: translate(-50%, -50%);
 }
 .header img {
-  float: right;
+  float: left;
   width: 100px;
   height: 100px;
 }
@@ -148,4 +125,24 @@ video {
 #self {
   width: 50%;
   left: 50%;
+}
+#chat-log {
+  overflow: scroll;
+}
+#chat-log .peer {
+  background: #EEE;
+  float: left;
+  clear: both;
+}
+#chat-log .self {
+  background: #990000;
+  float: right;
+  clear: both;
+}
+#chat {
+  height: 45vh;
+  display: grid;
+  border: 5px dashed #EEE;
+  float: right;
+  flex-direction: column;
 }
