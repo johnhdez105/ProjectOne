@@ -154,9 +154,15 @@ async function handleRtcNegotiation() {
   console.log('RTC negotiation needed...');
 
   $self.isMakingOffer = true;
-  await $peer.connection.setLocalDescription();
-  sc.emit('signal', { description:
-    $peer.connection.localDescription });
+  try {
+    await $peer.connection.setLocalDescription();
+  } catch(e) {
+    const offer = await $peer.connection.createOffer();
+    await $peer.connection.setLocalDescription(offer);
+  } finally {
+    sc.emit('signal', { description:
+      $peer.connection.localDescription });
+  }
   $self.isMakingOffer = false;
 }
 function handleIceCandidate({ candidate }) {
@@ -215,12 +221,18 @@ await $peer.connection.setRemoteDescription(description);
 $self.isSettingRemoteAnswerPending = false;
 
 if (description.type === 'offer') {
+  try {
   await $peer.connection.setLocalDescription();
+} catch(e) {
+  const answer = await $peer.connection.createAnswer();
+  await $peer.connection.setLocalDescription(answer);
+} finally {
   sc.emit('signal',
     { description:
       $peer.connection.localDescription });
     }
-  } else if (candidate) {
+  }
+} else if (candidate) {
     console.log('Received ICE candidate:', candidate);
     try {
       await $peer.connection.addIceCandidate(candidate);
