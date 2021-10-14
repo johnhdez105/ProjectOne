@@ -12,12 +12,18 @@
       <img src="images/iit.png">
       <h1>Welcome to IIT Office Hours!</h1>
     </div>
+
     <article id="videos">
+    <h3>Host</h3>
     <video id="self"
       autoplay
       muted
       playsinline>
     </video>
+    <button type="button" class="audiocut" id="audio-button">Mute</button>
+    <button type="button" class="videocut" id="video-button">Video Off</button>
+
+    <h3>Visitor</h3>
     <video id="peer"
       autoplay
       playsinline>
@@ -30,6 +36,18 @@
       <button type="button" class ="searchButton" id="call-button">Join Call</button>
    </div>
    </div>
+
+   <article id="chat">
+     <h2 class="access">Chat room</h2>
+     <ol id="chat-log">
+     </ol>
+     <form id="chat-form" action="#null" method="get">
+       <label class="access" for="chat-input">Your Message</label>
+       <input id="chat-input" type="text" autocomplete="off" />
+       <label class="access" for="chat-input">Send Message</label>
+       <button id="chat-button" type="submit">Send</button>
+     </form>
+   </article>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://webrtchacks.github.io/adapter/adapter-latest.js"></script>
