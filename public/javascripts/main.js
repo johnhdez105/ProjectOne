@@ -133,6 +133,24 @@ function muteAudio(e){
   }
 }
 
+function resetAndRetryConnection(peer) {
+  resetCall(peer);
+  $self.isMakingOffer = false;
+  $self.isIgnoringOffer = false;
+  $self.isSettingRemoteAnswerPending = false;
+  // Polite peer must suppress initial offer
+  $self.isSuppressingInitialOffer = $self.isPolite;
+  registerRtcEvents(peer);
+  establishCallFeatures(peer);
+
+  // Let the remote peer know we're resetting
+  if ($self.isPolite) {
+    sc.emit('signal',
+      { description:
+        { type: '_reset'}
+      });
+  }
+}
 
 function establishCallFeatures(peer) {
   peer.chatChannel = peer.connection
@@ -155,6 +173,7 @@ function registerRtcEvents(peer) {
 }
 
 async function handleRtcNegotiation() {
+  if ($self.isSuppressingInitialOffer) return;
   console.log('RTC negotiation needed...');
 
   $self.isMakingOffer = true;
@@ -206,6 +225,12 @@ async function handleScSignal({ description, candidate }) {
   console.log('Heard signal event!');
   if (description) {
     console.log('Received SDP Signal:', description);
+
+    if (description.type === '_reset') {
+      resetAndRetryConnection($peer);
+      return;
+    }
+
     const readyForOffer =
     !$self.isMakingOffer &&
     ($peer.connection.signalingState === 'stable'
@@ -219,7 +244,14 @@ if ($self.isIgnoringOffer) {
   return;
 }
 $self.isSettingRemoteAnswerPending = description.type === 'answer';
-await $peer.connection.setRemoteDescription(description);
+console.log('Signaling state on incoming description:',
+  $peer.connection.signalingState);
+try {
+  await $peer.connection.setRemoteDescription(description);
+} catch(e) {
+  resetAndRetryConnection($peer);
+  return;
+}
 $self.isSettingRemoteAnswerPending = false;
 
 if (description.type === 'offer') {
@@ -232,6 +264,7 @@ if (description.type === 'offer') {
   sc.emit('signal',
     { description:
       $peer.connection.localDescription });
+      $self.isSuppressingInitialOffer = false;
     }
   }
 } else if (candidate) {
